@@ -16,18 +16,30 @@ def test_add_subtask_to_task():
     assert sub_task.parent_task == task
 
 
-def test_delete_subtask_form_task():
+def test_task_delete():
     task = Task('test', 'Julia', datetime(2024, 9, 20))
-    sub_task = Task('test2', 'Maria', datetime(2024, 9, 21))
+    sub_task = Task('test2', 'Mark', datetime(2024, 9, 21))
 
     task.add_subtask(sub_task)
+    assert len(task._child_tasks) == 1
 
-    if len(task._child_tasks) != 1 and sub_task.parent_task != task:
-        raise 'ErrorAddSubtask'
-
-    task.delete_subtask(sub_task)
+    sub_task.delete_task()
 
     assert len(task._child_tasks) == 0
+
+
+def test_task_update():
+    task = Task('test', 'Julia', datetime(2024, 9, 20))
+    new_task = Task('test2', 'Julia2', datetime(2024, 9, 21),
+                    description='new task',
+                    status=TaskStatus.IN_PROGRESS)
+    task.update_task(new_task)
+
+    assert task.name == new_task.name
+    assert task.workers == new_task.workers
+    assert task.finish_date == new_task.finish_date
+    assert task.description == new_task.description
+    assert task.status == new_task.status
 
 
 def test_auto_calculated_planed_time_to_finish_by_the_time_of_subtasks():
@@ -44,18 +56,8 @@ def test_auto_calculated_planed_time_to_finish_by_the_time_of_subtasks():
 
     assert task.get_planned_ttf() == sub_task1.get_planned_ttf() + \
                                         sub_task2.get_planned_ttf()
-
-# def test_task_delete():
-#     board = Board()
-#     task = Task()
-#     board.add(task)
-
-#     if board.task_count() != 1:
-#         raise 'ErrorCreationTask'
-
-#     board.delete(task)
-
-#     assert board.task_count() == 0
+    assert sub_task1.get_planned_ttf() == sub_task3.get_planned_ttf() + \
+                                            sub_task4.get_planned_ttf()
 
 # def test_auto_calculated_planed_time_to_finish_by_the_time_of_subtasks():
 #     task = Task()
@@ -79,14 +81,10 @@ def test_auto_calculated_planed_time_to_finish_by_the_time_of_subtasks():
 # def test_task_status_change_to_finish_also_finished_subtusk():
 #     pass
 
-# def test_task_update():
-#     pass 
-
-# def test_task_add_subtask():
-#     pass
-
 
 if __name__ == '__main__':
     test_add_subtask_to_task()
-    test_delete_subtask_form_task()
+    # test_delete_subtask_form_task()
+    test_task_delete()
+    test_task_update()
     test_auto_calculated_planed_time_to_finish_by_the_time_of_subtasks()
